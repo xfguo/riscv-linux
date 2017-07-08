@@ -528,6 +528,18 @@ discard_and_relse:
 }
 EXPORT_SYMBOL(__sk_receive_skb);
 
+u64 sock_gen_cookie(struct sock *sk)
+{
+	while (1) {
+		u64 res = atomic64_read(&sk->sk_cookie);
+
+		if (res)
+			return res;
+		res = atomic64_inc_return(&sock_net(sk)->cookie_gen);
+		atomic64_cmpxchg(&sk->sk_cookie, 0, res);
+	}
+}
+
 struct dst_entry *__sk_dst_check(struct sock *sk, u32 cookie)
 {
 	struct dst_entry *dst = __sk_dst_get(sk);
@@ -1595,9 +1607,11 @@ void sk_destruct(struct sock *sk)
 
 static void __sk_free(struct sock *sk)
 {
+#ifdef CONFIG_SOCK_DIAG
 	if (unlikely(sock_diag_has_destroy_listeners(sk) && sk->sk_net_refcnt))
 		sock_diag_broadcast_destroy(sk);
 	else
+#endif
 		sk_destruct(sk);
 }
 
