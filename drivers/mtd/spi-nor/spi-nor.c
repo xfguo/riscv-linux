@@ -2555,10 +2555,12 @@ static int spi_nor_select_erase(struct spi_nor *nor,
 
 #ifdef CONFIG_MTD_SPI_NOR_USE_4K_SECTORS
 	/* prefer "small sector" erase if possible */
-	if (info->flags & SECT_4K) {
+	if ((info->flags & SECT_4K) && (mtd->size <=
+	    CONFIG_MTD_SPI_NOR_USE_4K_SECTORS_LIMIT * 1024)) {
 		nor->erase_opcode = SPINOR_OP_BE_4K;
 		mtd->erasesize = 4096;
-	} else if (info->flags & SECT_4K_PMC) {
+	} else if ((info->flags & SECT_4K_PMC) && (mtd->size <=
+		   CONFIG_MTD_SPI_NOR_USE_4K_SECTORS_LIMIT * 1024)) {
 		nor->erase_opcode = SPINOR_OP_BE_4K_PMC;
 		mtd->erasesize = 4096;
 	} else
