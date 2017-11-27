@@ -274,7 +274,6 @@ struct nf_queue_entry;
 
 struct nf_afinfo {
 	unsigned short	family;
-	int		route_key_size;
 };
 
 extern const struct nf_afinfo __rcu *nf_afinfo[NFPROTO_NUMPROTO];
