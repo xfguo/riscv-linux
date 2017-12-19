@@ -963,7 +963,6 @@ enum nft_af_flags {
  *
  *	@list: used internally
  *	@family: address family
- *	@nhooks: number of hooks in this family
  *	@owner: module owner
  *	@tables: used internally
  *	@flags: family flags
@@ -971,7 +970,6 @@ enum nft_af_flags {
 struct nft_af_info {
 	struct list_head		list;
 	int				family;
-	unsigned int			nhooks;
 	struct module			*owner;
 	struct list_head		tables;
 	u32				flags;
