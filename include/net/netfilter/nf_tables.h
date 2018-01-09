@@ -950,27 +950,11 @@ struct nft_table {
 	struct list_head		flowtables;
 	u64				hgenerator;
 	u32				use;
-	u16				flags:14,
+	u16				family:6,
+					flags:8,
 					genmask:2;
-	struct nft_af_info		*afi;
 	char				*name;
 };
-
-/**
- *	struct nft_af_info - nf_tables address family info
- *
- *	@list: used internally
- *	@family: address family
- *	@owner: module owner
- */
-struct nft_af_info {
-	struct list_head		list;
-	int				family;
-	struct module			*owner;
-};
-
-int nft_register_afinfo(struct nft_af_info *);
-void nft_unregister_afinfo(struct nft_af_info *);
 
 int nft_register_chain_type(const struct nf_chain_type *);
 void nft_unregister_chain_type(const struct nf_chain_type *);
@@ -1138,9 +1122,6 @@ void nft_trace_notify(struct nft_traceinfo *info);
 
 #define nft_dereference(p)					\
 	nfnl_dereference(p, NFNL_SUBSYS_NFTABLES)
-
-#define MODULE_ALIAS_NFT_FAMILY(family)	\
-	MODULE_ALIAS("nft-afinfo-" __stringify(family))
 
 #define MODULE_ALIAS_NFT_CHAIN(family, name) \
 	MODULE_ALIAS("nft-chain-" __stringify(family) "-" name)
