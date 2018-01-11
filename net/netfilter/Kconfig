@@ -686,6 +686,15 @@ config NF_FLOW_TABLE
 
 	  To compile it as a module, choose M here.
 
+config NF_FLOW_TABLE_HW
+	tristate "Netfilter flow table hardware offload module"
+	depends on NF_FLOW_TABLE
+	help
+	  This option adds hardware offload support for the flow table core
+	  infrastructure.
+
+	  To compile it as a module, choose M here.
+
 config NETFILTER_XTABLES
 	tristate "Netfilter Xtables support (required for ip_tables)"
 	default m if NETFILTER_ADVANCED=n
