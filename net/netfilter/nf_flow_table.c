@@ -462,5 +462,35 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
 }
 EXPORT_SYMBOL_GPL(nf_flow_table_free);
 
+static int nf_flow_table_netdev_event(struct notifier_block *this,
+				      unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+
+	if (event != NETDEV_DOWN)
+		return NOTIFY_DONE;
+
+	nf_flow_table_cleanup(dev_net(dev), dev);
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block flow_offload_netdev_notifier = {
+	.notifier_call	= nf_flow_table_netdev_event,
+};
+
+static int __init nf_flow_table_module_init(void)
+{
+	return register_netdevice_notifier(&flow_offload_netdev_notifier);
+}
+
+static void __exit nf_flow_table_module_exit(void)
+{
+	unregister_netdevice_notifier(&flow_offload_netdev_notifier);
+}
+
+module_init(nf_flow_table_module_init);
+module_exit(nf_flow_table_module_exit);
+
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
