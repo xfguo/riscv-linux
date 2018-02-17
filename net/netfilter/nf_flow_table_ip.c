@@ -181,9 +181,6 @@ static bool nf_flow_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
 	if (skb->len <= mtu)
 		return false;
 
-	if ((ip_hdr(skb)->frag_off & htons(IP_DF)) == 0)
-		return false;
-
 	if (skb_is_gso(skb) && skb_gso_validate_mtu(skb, mtu))
 		return false;
 
@@ -222,7 +219,8 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
 	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
 	rt = (const struct rtable *)flow->tuplehash[dir].tuple.dst_cache;
 
-	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
+	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)) &&
+	    (ip_hdr(skb)->frag_off & htons(IP_DF)) != 0)
 		return NF_ACCEPT;
 
 	if (skb_try_make_writable(skb, sizeof(*iph)))
