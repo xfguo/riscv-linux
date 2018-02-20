@@ -4879,7 +4879,7 @@ static int nf_tables_flowtable_parse_hook(const struct nft_ctx *ctx,
 		flowtable->ops[i].pf		= NFPROTO_NETDEV;
 		flowtable->ops[i].hooknum	= hooknum;
 		flowtable->ops[i].priority	= priority;
-		flowtable->ops[i].priv		= &flowtable->data.rhashtable;
+		flowtable->ops[i].priv		= &flowtable->data;
 		flowtable->ops[i].hook		= flowtable->data.type->hook;
 		flowtable->ops[i].dev		= dev_array[i];
 	}
