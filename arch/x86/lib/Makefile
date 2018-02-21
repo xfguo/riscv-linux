@@ -34,6 +34,7 @@ ifeq ($(CONFIG_X86_32),y)
         obj-y += atomic64_32.o
         lib-y += atomic64_cx8_32.o
         lib-y += checksum_32.o
+        lib-y += udivdi3.o
         lib-y += strstr_32.o
         lib-y += string_32.o
 ifneq ($(CONFIG_X86_CMPXCHG64),y)
