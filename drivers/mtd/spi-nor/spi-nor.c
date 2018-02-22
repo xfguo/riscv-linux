@@ -1371,7 +1371,7 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
 
 		write_enable(nor);
 		ret = nor->write(nor, addr, page_remain, buf + i);
-		if (ret < 0)
+		if (ret <= 0)
 			goto write_err;
 		written = ret;
 
@@ -1380,13 +1380,6 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
 			goto write_err;
 		*retlen += written;
 		i += written;
-		if (written != page_remain) {
-			dev_err(nor->dev,
-				"While writing %zu bytes written %zd bytes\n",
-				page_remain, written);
-			ret = -EIO;
-			goto write_err;
-		}
 	}
 
 write_err:
