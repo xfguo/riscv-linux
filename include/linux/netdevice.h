@@ -827,6 +827,7 @@ struct xfrmdev_ops {
 #endif
 
 struct flow_offload;
+struct flow_offload_hw_path;
 
 enum flow_offload_type {
 	FLOW_OFFLOAD_ADD	= 0,
@@ -1064,8 +1065,15 @@ enum flow_offload_type {
  * int (*ndo_bridge_dellink)(struct net_device *dev, struct nlmsghdr *nlh,
  *			     u16 flags);
  *
+ * int (*ndo_flow_offload_check)(struct flow_offload_hw_path *path);
+ *	For virtual devices like bridges, vlan, and pppoe, fill in the
+ *	underlying network device that can be used for offloading connections.
+ *	Return an error if offloading is not supported.
+ *
  * int (*ndo_flow_offload)(enum flow_offload_type type,
- *			   struct flow_offload *flow);
+ *			   struct flow_offload *flow,
+ *			   struct flow_offload_hw_path *src,
+ *			   struct flow_offload_hw_path *dest);
  *	Adds/deletes flow entry to/from net device flowtable.
  *
  * int (*ndo_change_carrier)(struct net_device *dev, bool new_carrier);
@@ -1292,8 +1300,11 @@ struct net_device_ops {
 	int			(*ndo_bridge_dellink)(struct net_device *dev,
 						      struct nlmsghdr *nlh,
 						      u16 flags);
+	int			(*ndo_flow_offload_check)(struct flow_offload_hw_path *path);
 	int			(*ndo_flow_offload)(enum flow_offload_type type,
-						    struct flow_offload *flow);
+						    struct flow_offload *flow,
+						    struct flow_offload_hw_path *src,
+						    struct flow_offload_hw_path *dest);
 	int			(*ndo_change_carrier)(struct net_device *dev,
 						      bool new_carrier);
 	int			(*ndo_get_phys_port_id)(struct net_device *dev,
