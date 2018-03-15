@@ -32,6 +32,8 @@ struct ppp_channel_ops {
 	int	(*start_xmit)(struct ppp_channel *, struct sk_buff *);
 	/* Handle an ioctl call that has come in via /dev/ppp. */
 	int	(*ioctl)(struct ppp_channel *, unsigned int, unsigned long);
+
+	int	(*flow_offload_check)(struct ppp_channel *, struct flow_offload_hw_path *);
 };
 
 struct ppp_channel {
