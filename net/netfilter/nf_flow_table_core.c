@@ -332,7 +332,7 @@ static int nf_flow_offload_gc_step(struct nf_flowtable *flow_table)
 		teardown = flow->flags & (FLOW_OFFLOAD_DYING |
 					  FLOW_OFFLOAD_TEARDOWN);
 
-		if (nf_flow_in_hw(flow) && !teardown)
+		if ((flow->flags & FLOW_OFFLOAD_KEEP) && !teardown)
 			continue;
 
 		if (nf_flow_has_expired(flow) || teardown)
