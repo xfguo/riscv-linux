@@ -29,6 +29,7 @@
 #include <linux/kmod.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+#include <linux/of.h>
 #include <linux/err.h>
 #include <linux/of.h>
 
@@ -864,6 +865,32 @@ void deregister_mtd_parser(struct mtd_part_parser *p)
 EXPORT_SYMBOL_GPL(deregister_mtd_parser);
 
 /*
+ * Parses the linux,part-probe device tree property.
+ * When a non null value is returned it has to be freed with kfree() by
+ * the caller.
+ */
+static const char * const *of_get_probes(struct device_node *dp)
+{
+	const char **res;
+	int count;
+
+	count = of_property_count_strings(dp, "linux,part-probe");
+	if (count < 0)
+		return NULL;
+
+	res = kzalloc((count + 1) * sizeof(*res), GFP_KERNEL);
+	if (!res)
+		return NULL;
+
+	count = of_property_read_string_array(dp, "linux,part-probe", res,
+					      count);
+	if (count < 0)
+		return NULL;
+
+	return res;
+}
+
+/*
  * Do not forget to update 'parse_mtd_partitions()' kerneldoc comment if you
  * are changing this array!
  */
@@ -1007,6 +1034,13 @@ int parse_mtd_partitions(struct mtd_info *master, const char *const *types,
 {
 	struct mtd_part_parser *parser;
 	int ret, err = 0;
+	const char *const *types_of = NULL;
+
+	if (mtd_get_of_node(master)) {
+		types_of = of_get_probes(mtd_get_of_node(master));
+		if (types_of != NULL)
+			types = types_of;
+	}
 
 	if (!types)
 		types = default_mtd_part_types;
@@ -1043,6 +1077,7 @@ int parse_mtd_partitions(struct mtd_info *master, const char *const *types,
 		if (ret < 0 && !err)
 			err = ret;
 	}
+	kfree(types_of);
 	return err;
 }
 
