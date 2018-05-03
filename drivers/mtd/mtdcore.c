@@ -41,6 +41,7 @@
 #include <linux/reboot.h>
 #include <linux/leds.h>
 #include <linux/debugfs.h>
+#include <linux/root_dev.h>
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
@@ -578,6 +579,15 @@ int add_mtd_device(struct mtd_info *mtd)
 	   of this try_ nonsense, and no bitching about it
 	   either. :) */
 	__module_get(THIS_MODULE);
+
+	if (!strcmp(mtd->name, "rootfs") &&
+	    IS_ENABLED(CONFIG_MTD_ROOTFS_ROOT_DEV) &&
+	    ROOT_DEV == 0) {
+		pr_notice("mtd: device %d (%s) set to be root filesystem\n",
+			  mtd->index, mtd->name);
+		ROOT_DEV = MKDEV(MTD_BLOCK_MAJOR, mtd->index);
+	}
+
 	return 0;
 
 fail_added:
