@@ -2708,6 +2708,7 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
 
 	if (JEDEC_MFR(info) == SNOR_MFR_ATMEL ||
 	    JEDEC_MFR(info) == SNOR_MFR_INTEL ||
+	    JEDEC_MFR(info) == SNOR_MFR_MACRONIX ||
 	    JEDEC_MFR(info) == SNOR_MFR_SST ||
 	    info->flags & SPI_NOR_HAS_LOCK) {
 		write_enable(nor);
