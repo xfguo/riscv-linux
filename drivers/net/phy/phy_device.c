@@ -845,11 +845,11 @@ EXPORT_SYMBOL(phy_disconnect);
 static int phy_poll_reset(struct phy_device *phydev)
 {
 	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
-	unsigned int retries = 12;
+	unsigned int retries = 22;
 	int ret;
 
 	do {
-		msleep(50);
+		msleep(100);
 		ret = phy_read(phydev, MII_BMCR);
 		if (ret < 0)
 			return ret;
@@ -1052,6 +1052,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
 	 * (dev_flags and interface)
 	 */
 	err = phy_init_hw(phydev);
+	pr_err("%s: phy init hw err = [%d]\n", __func__, err);
 	if (err)
 		goto error;
 
