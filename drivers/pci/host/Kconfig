@@ -230,7 +230,8 @@ config VMD
 
 config PCIE_MICROSEMI
 	bool "Microsemi AXI PCIe host bridge support"
-	depends on OF_PCI
+	depends on OF
+	depends on PCI
 	help
 	  Say 'Y' here if you want kernel to support the Microsemi AXI PCIe
 	  Host Bridge driver.
